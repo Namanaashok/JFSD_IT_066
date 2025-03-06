@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>voters portal</title>
+
+    <style> 
+        input {
+          width: 30%;
+        }
+          </style>
+
+</head>
+
+<body>
+    <h1>voter's portal</h1>
+
+    <form id="voters form">
+
+        <label for="Fname">Name:</label>
+
+        <input type="text" placeholder="Enter the name" id="Fname"><br>
+
+        <label for="Fname1">Age:</label>
+
+        <input type="number" placeholder="Enter the age" id="Fname1"><br>
+
+        <label for="Fname1">Nationality:</label>
+
+        <input type="text" placeholder="Enter the Nationality" id="Fname1"><br>
+
+
+        <button type="submit">Check eligibility</button>
+
+    </form>
+
+    <script>
+
+        var form=document.getElementById("voters form")
+
+        form.addEventListener('submit',
+
+            function(event){
+
+                event.preventDefault();
+
+                alert("Form submitted");
+
+                form.reset();
+
+            }
+
+        )
+
+    </script>
+
+</body>
+
+</html>
