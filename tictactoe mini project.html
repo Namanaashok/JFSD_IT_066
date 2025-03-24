@@ -1,81 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Alliance Weather Finder</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIC TAC TOE</title>
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            background-image: url("70272.jpg");
-       
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
         h1 {
-            color: #333;
-        }
-        form {
-            margin-bottom: 20px;
-        }
-        input[type="search"], button {
-            padding: 10px;
-            font-size: 16px;
-        }
-        button {
-            background-color: rgb(70, 160, 202);
-            color:white;
-            cursor: pointer;
-        }
-        .weather-info {
+            color:antiquewhite;
             text-align: center;
+            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        .board{
+            display: grid; 
+            grid-template-columns: repeat(3,100px);
+            grid-template-rows: repeat(3,100px); 
+            gap: 2px;
+            justify-content: center;
+            
+        }
+        .cell{
+            width: 100px;
+            height:100px;
+            background-color:rgb(248, 186, 166);
+            display: flex;
+            border-radius:5%;
+            justify-content: center;
+            align-items: center;
+            font-size: medium;
+            cursor:pointer;  
+        }
+        .cell:hover{
+            background-color: antiquewhite;
+        }
+        #status{
+            text-align: center;
+        }
+        button{
+            padding: 10px 20px;
+            background-color:antiquewhite;
+            border:none;
+            border-radius: 5%;
+            text-align: center;
+            cursor: pointer;
+            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        button:hover{
+            background-color: rgb(248, 186, 166);
         }
     </style>
 </head>
-<body>
-    <h1>Alliance Weather Finder</h1>
-    <form>
-        <input type="search" id="city" placeholder="City" required>  
-        <button type="submit" onclick="getWeather(event)">Search</button>
-    </form>
-    <div class="weather-info">
-        <p id="cityName"></p>
-        <p>Temperature: <span id="temp"></span>℃</p>
-        <p>Max Temperature: <span id="tempMax"></span>℃</p>
-        <p>Min Temperature: <span id="tempMin"></span>℃</p>
-        <p>Humidity: <span id="humidity"></span>%</p>
-        <p>Description: <span id="description"></span></p>
+<body style="background-image: url(tbg.jpg); background-repeat: no-repeat;background-size: cover;">
+    
+    <h1>Tic Tac Toe</h1>
+    <div class="board">
+        <div class="cell" id="0"></div>
+        <div class="cell" id="1"></div>
+        <div class="cell" id="2"></div>
+        <div class="cell" id="3"></div>
+        <div class="cell" id="4"></div>
+        <div class="cell" id="5"></div>
+        <div class="cell" id="6"></div>
+        <div class="cell" id="7"></div>
+        <div class="cell" id="8"></div>
     </div>
+    <p id="status" style="color:rgb(248, 186, 166);"><b>X's TURN</b></p>
+    <center><button id="reset">Restart</button></center>
+    
     <script>
-        const api = {
-            base: "https://api.openweathermap.org/data/2.5/weather?q=",
-            key: "6f38b226bbb6185bb61450b2bbe70ad6"
+        const cells = document.querySelectorAll(".cell");
+        const statusText = document.getElementById("status");
+        const resetButton = document.getElementById("reset");
+
+        let currentPlayer = "X";
+        let boardState = ["", "", "", "", "", "", "", "", ""];
+        let gameActive = true;
+
+        const winPatterns = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], 
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+        [0, 4, 8], [2, 4, 6] 
+        ];
+
+        function handleClick(event) {
+            const index = event.target.id;
+
+            if (boardState[index] !== "" || !gameActive) return;
+
+            boardState[index] = currentPlayer;
+            event.target.textContent = currentPlayer;
+
+            if (checkWin()) {
+            statusText.textContent = `Player ${currentPlayer} wins! 🎉`;
+            gameActive = false;
+            } else if (!boardState.includes("")) {
+            statusText.textContent = "It's a draw! 🤝";
+            gameActive = false;
+            } else {
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            statusText.textContent = `Player ${currentPlayer}'s turn`;
+            }
         }
-        const form = document.querySelector('form');
-        const city = document.getElementById('city');
-       
-        function getWeather(event) {
-            event.preventDefault();
-            var cityName = city.value;
-            fetch(`${api.base}${cityName}&units=metric&appid=${api.key}`)
-                .then(response => response.json())
-                .then(data => showWeather(data))
-                .catch(error => console.log('Error:', error));
+        function checkWin() {
+            return winPatterns.some(pattern => 
+            pattern.every(index => boardState[index] === currentPlayer)
+            );
         }
-       
-        function showWeather(data) {
-            console.log(data);
-            document.getElementById('cityName').textContent = data.name;
-            document.getElementById('temp').textContent = data.main.temp;
-            document.getElementById('tempMax').textContent = data.main.temp_max;
-            document.getElementById('tempMin').textContent = data.main.temp_min;
-            document.getElementById('humidity').textContent = data.main.humidity;
-            document.getElementById('description').textContent = data.weather[0].description;
+
+        function resetGame() {
+            boardState.fill("");
+            cells.forEach(cell => (cell.textContent = ""));
+            currentPlayer = "X";
+            gameActive = true;
+            statusText.textContent = "Player X's turn";
         }
+
+        cells.forEach(cell => cell.addEventListener("click", handleClick));
+        resetButton.addEventListener("click", resetGame);
+
     </script>
 </body>
 </html>
